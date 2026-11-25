@@ -1,0 +1,19 @@
+# ReadyStack slice definition: chisel-releases (ubuntu-24.04) has no slice for libaio1t64, which MariaDB and MySQL
+# load (InnoDB native AIO). Cut from Ubuntu's own libaio1t64 .deb, as every canonical slice is; the format and the
+# paths follow chisel-releases' own library slices (liblz4-1.yaml). Contents of libaio1t64 0.3.113-6build1.1 (noble):
+# /usr/lib/x86_64-linux-gnu/libaio.so.1t64.0.2, its libaio.so.1t64 link, /usr/share/doc/libaio1t64/{copyright,changelog.Debian.gz}.
+package: libaio1t64
+
+essential:
+  - libaio1t64_copyright
+
+slices:
+  libs:
+    essential:
+      - libc6_libs
+    contents:
+      /usr/lib/*-linux-*/libaio.so.1t64*:
+
+  copyright:
+    contents:
+      /usr/share/doc/libaio1t64/copyright:

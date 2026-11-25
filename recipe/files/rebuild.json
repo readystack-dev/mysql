@@ -1,0 +1,41 @@
+{
+  "bases": [
+    {
+      "digest": "sha256:fea12ba16096adec0f699ce1c4da2154d320450e56c1f63671f95d2a3551c77b",
+      "layout": "bases/golang_1.27.3-bookworm_972b4110ba0f.oci",
+      "ref": "golang:1.27.3-bookworm@sha256:972b4110ba0f47539a975c31e52c64765e1ff19f2d74469ae4a595c6676e80a5"
+    },
+    {
+      "digest": "sha256:9a04f13b3f80ef056361e30868593b1cfd2279fe19e4081cb93a90bf56819d6a",
+      "layout": "bases/ubuntu_24.04_9c7f200c07e3.oci",
+      "ref": "ubuntu:24.04@sha256:9c7f200c07e3d4a03e7249d2c16bf66a51120fb876aa2242cf31451412543289"
+    }
+  ],
+  "engine": {
+    "archive": "toolchain/buildkit.tar",
+    "image_digest": "sha256:e0e67ea9c4bb07bdef683e29f70f3b623d1eb9c82274a9ec04e6bb0511449fb0",
+    "kind": "buildkit",
+    "tag": "moby/buildkit:v0.31.2"
+  },
+  "inputs": {
+    "context": ".",
+    "dockerfile": "Dockerfile.offline.pinned",
+    "mtime_policy": "clamp",
+    "source_date_epoch": 1795161132,
+    "tree_hash": "sha256:1d86b0091dc5476b46f6329d850665e42773786d52c15948274b84cd3a121047"
+  },
+  "probe": {
+    "exec": "mysqladmin --protocol=tcp --host=127.0.0.1 --port=3306 --connect-timeout=5 --silent ping",
+    "port": 3306,
+    "secrets": [
+      "MYSQL_ROOT_PASSWORD"
+    ],
+    "timeout_s": 180
+  },
+  "schema": "readystack-rebuild-bundle/v0.1",
+  "subject": {
+    "config_digest": "sha256:bcfe9728020aee5e2052f6c443af2c7305062d149e4437755a6fcafdf121478d",
+    "image_manifest_digest": "sha256:b37e1407399a326725734783af3e128c91d291f04338b492a3d8c83dfe75a987",
+    "name": "docker.io/readystack/mysql:9.7.4-CE-ubuntu24.04-r6"
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "apt_refresh": [
+    {
+      "min_version": "10.42-4ubuntu2.2",
+      "package": "libpcre2-8-0",
+      "reason": "UBUNTU-CVE-2026-103111, UBUNTU-CVE-2026-86145, UBUNTU-CVE-2026-89157, UBUNTU-CVE-2026-89161: libpcre2-8-0 10.42-4ubuntu2.1 -> 10.42-4ubuntu2.2"
+    },
+    {
+      "min_version": "2.39-0ubuntu8.12",
+      "package": "libc-bin",
+      "reason": "CVE-2026-18374, CVE-2026-84243, CVE-2026-8674, CVE-2026-86805 \u2026: libc-bin 2.39-0ubuntu8.9 -> 2.39-0ubuntu8.12"
+    },
+    {
+      "min_version": "2.39-0ubuntu8.12",
+      "package": "libc6",
+      "reason": "CVE-2026-18374, CVE-2026-84243, CVE-2026-8674, CVE-2026-86805 \u2026: libc6 2.39-0ubuntu8.9 -> 2.39-0ubuntu8.12"
+    }
+  ],
+  "binaries_from_source": [
+    {
+      "name": "mysqld",
+      "out_path": "/usr/local/mysql/bin/mysqld",
+      "verify_subcmd": "--version"
+    },
+    {
+      "name": "mysql",
+      "out_path": "/usr/local/mysql/bin/mysql",
+      "verify_subcmd": "--version"
+    },
+    {
+      "name": "mysqladmin",
+      "out_path": "/usr/local/mysql/bin/mysqladmin",
+      "verify_subcmd": "--version"
+    },
+    {
+      "name": "mysqldump",
+      "out_path": "/usr/local/mysql/bin/mysqldump",
+      "verify_subcmd": "--version"
+    }
+  ],
+  "build_method": "source-rebuild-c",
+  "chain_id": 1141,
+  "dep_bumps": [],
+  "expected_residuals": [],
+  "images": [
+    {
+      "digest": "sha256:9c7f200c07e3d4a03e7249d2c16bf66a51120fb876aa2242cf31451412543289",
+      "ref": "ubuntu:24.04",
+      "role": "builder"
+    },
+    {
+      "digest": "sha256:9c7f200c07e3d4a03e7249d2c16bf66a51120fb876aa2242cf31451412543289",
+      "ref": "ubuntu:24.04",
+      "role": "offline_builder"
+    },
+    {
+      "digest": "sha256:9c7f200c07e3d4a03e7249d2c16bf66a51120fb876aa2242cf31451412543289",
+      "ref": "ubuntu:24.04",
+      "role": "base"
+    }
+  ],
+  "mod_replaces": [],
+  "runtime_base": {
+    "kind": "chisel",
+    "provides": [
+      "ibd2sdi",
+      "innochecksum",
+      "my_print_defaults",
+      "myisam_ftdump",
+      "myisamchk",
+      "myisamlog",
+      "myisampack",
+      "mysql",
+      "mysql_config",
+      "mysql_config_editor",
+      "mysql_migrate_keyring",
+      "mysql_secure_installation",
+      "mysql_tzinfo_to_sql",
+      "mysqladmin",
+      "mysqlbinlog",
+      "mysqlcheck",
+      "mysqld",
+      "mysqld_multi",
+      "mysqld_safe",
+      "mysqldump",
+      "mysqldumpslow",
+      "mysqlimport",
+      "mysqlshow",
+      "mysqlslap",
+      "perror"
+    ],
+    "rootfs_run": [
+      "mkdir -p \"$ROOT/etc/mysql/conf.d\""
+    ],
+    "shell": true,
+    "slice_defs": [
+      "libaio1t64"
+    ],
+    "slices": [
+      "libicu74_libs",
+      "libssl3t64_libs",
+      "zlib1g_libs",
+      "libzstd1_libs",
+      "libtinfo6_libs",
+      "libstdc++6_libs",
+      "liblz4-1_libs",
+      "libgcc-s1_libs",
+      "libaio1t64_libs",
+      "libc-bin_locale"
+    ],
+    "tools": [
+      "bash",
+      "seq",
+      "id"
+    ]
+  },
+  "schema": "kitforge.toolchain_lock.v1",
+  "slug": "mysql",
+  "source": {
+    "build_cmds": [
+      "cmake -S . -B build -DBUILD_CONFIG=mysql_release -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DINSTALL_LAYOUT=STANDALONE -DREPRODUCIBLE_BUILD=ON '-DCOMPILATION_COMMENT=ReadyStack build of MySQL Community Server (GPL)' '-DCOMPILATION_COMMENT_SERVER=ReadyStack build of MySQL Community Server (GPL)' -DWITH_SSL=system -DWITH_ZLIB=system -DWITH_ZSTD=system -DWITH_LZ4=system -DWITH_ICU=system -DWITH_PROTOBUF=bundled -DWITH_EDITLINE=bundled -DWITH_TIRPC=bundled -DWITH_CURL=none -DWITH_FIDO=none -DWITH_AUTHENTICATION_LDAP=OFF -DWITH_AUTHENTICATION_KERBEROS=OFF -DWITH_AUTHENTICATION_WEBAUTHN=OFF -DWITH_AUTHENTICATION_CLIENT_PLUGINS=OFF -DWITH_ROUTER=OFF -DWITH_UNIT_TESTS=OFF -DWITH_NDB=OFF -DWITHOUT_NDBCLUSTER_STORAGE_ENGINE=ON -DWITH_SYSTEMD=OFF -DWITH_NUMA=OFF -DWITHOUT_THREAD_POOL=1 -DINSTALL_MYSQLTESTDIR= -DINSTALL_STATIC_LIBRARIES=OFF",
+      "J=$(nproc); M=$(awk '/MemAvailable/ {print int($2/2097152)}' /proc/meminfo); [ \"$M\" -ge 1 ] || M=1; [ \"$M\" -lt \"$J\" ] && J=$M; echo \"compiling with $J parallel jobs\"; cmake --build build --parallel \"$J\"",
+      "cmake --install build --strip",
+      "cmake --install build --component Test --prefix /tmp/test-component && (cd /tmp/test-component && find . \\( -type f -o -type l \\) -print0) | (cd /usr/local/mysql && xargs -0 -r rm -f) && rm -rf /tmp/test-component",
+      "rm -f /usr/local/mysql/docs/INFO_BIN /usr/local/mysql/docs/INFO_SRC"
+    ],
+    "build_env": {
+      "DEB_BUILD_MAINT_OPTIONS": "optimize=-lto"
+    },
+    "build_packages": [
+      "build-essential",
+      "cmake",
+      "bison",
+      "pkg-config",
+      "perl",
+      "libssl-dev",
+      "zlib1g-dev",
+      "libzstd-dev",
+      "liblz4-dev",
+      "libicu-dev",
+      "libaio-dev",
+      "libncurses-dev",
+      "rpcsvc-proto"
+    ],
+    "build_system": "cmake",
+    "builder_image": "ubuntu:24.04",
+    "commit": "780b506e8296a61f2a7067bf2087d32c78e0bb76",
+    "commit_epoch": 1792523961,
+    "install_prefix": "/usr/local/mysql",
+    "ref": "mysql-9.7.4",
+    "repo": "https://github.com/mysql/mysql-server",
+    "source_date_epoch": 1795161132,
+    "source_date_epoch_basis": "release-cut",
+    "source_date_epoch_provenance": "the time release 9.7.4-CE-ubuntu24.04-r6 was cut (2026-11-20T07:52:12Z), by scripts/retarget.py --rev-bump: ReadyStack dates an image by when its release was packaged (owner 2026-11-10), recorded here once and used by every rebuild of the release; it builds upstream commit 780b506e8296, dated 2026-10-20T19:19:21Z (source.commit_epoch).",
+    "vendored_deps": true
+  },
+  "version": "9.7.4"
+}

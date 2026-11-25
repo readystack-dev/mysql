@@ -1,0 +1,9 @@
+{
+  "schema": "kitforge.source_tree_hash.v1",
+  "slug": "mysql",
+  "repo": "https://github.com/mysql/mysql-server",
+  "ref": "mysql-9.7.4",
+  "commit": "780b506e8296a61f2a7067bf2087d32c78e0bb76",
+  "tree_listing_sha256": "02f5225b63b5b77b31042a137b38d1f4c7f72df8625acf796f051157bdfdc557",
+  "file_count": 59201
+}

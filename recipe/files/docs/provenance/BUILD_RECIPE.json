@@ -1,0 +1,151 @@
+{
+  "schema": "kitforge.build_recipe.v1",
+  "slug": "mysql",
+  "image": "readystack/mysql:9.7.4-CE-ubuntu24.04-r6",
+  "build_method": "source-rebuild-c",
+  "source": {
+    "repo": "https://github.com/mysql/mysql-server",
+    "ref": "mysql-9.7.4",
+    "builder_image": "ubuntu:24.04",
+    "build_system": "cmake",
+    "build_packages": [
+      "build-essential",
+      "cmake",
+      "bison",
+      "pkg-config",
+      "perl",
+      "libssl-dev",
+      "zlib1g-dev",
+      "libzstd-dev",
+      "liblz4-dev",
+      "libicu-dev",
+      "libaio-dev",
+      "libncurses-dev",
+      "rpcsvc-proto"
+    ],
+    "build_env": {
+      "DEB_BUILD_MAINT_OPTIONS": "optimize=-lto"
+    },
+    "build_cmds": [
+      "cmake -S . -B build -DBUILD_CONFIG=mysql_release -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DINSTALL_LAYOUT=STANDALONE -DREPRODUCIBLE_BUILD=ON '-DCOMPILATION_COMMENT=ReadyStack build of MySQL Community Server (GPL)' '-DCOMPILATION_COMMENT_SERVER=ReadyStack build of MySQL Community Server (GPL)' -DWITH_SSL=system -DWITH_ZLIB=system -DWITH_ZSTD=system -DWITH_LZ4=system -DWITH_ICU=system -DWITH_PROTOBUF=bundled -DWITH_EDITLINE=bundled -DWITH_TIRPC=bundled -DWITH_CURL=none -DWITH_FIDO=none -DWITH_AUTHENTICATION_LDAP=OFF -DWITH_AUTHENTICATION_KERBEROS=OFF -DWITH_AUTHENTICATION_WEBAUTHN=OFF -DWITH_AUTHENTICATION_CLIENT_PLUGINS=OFF -DWITH_ROUTER=OFF -DWITH_UNIT_TESTS=OFF -DWITH_NDB=OFF -DWITHOUT_NDBCLUSTER_STORAGE_ENGINE=ON -DWITH_SYSTEMD=OFF -DWITH_NUMA=OFF -DWITHOUT_THREAD_POOL=1 -DINSTALL_MYSQLTESTDIR= -DINSTALL_STATIC_LIBRARIES=OFF",
+      "J=$(nproc); M=$(awk '/MemAvailable/ {print int($2/2097152)}' /proc/meminfo); [ \"$M\" -ge 1 ] || M=1; [ \"$M\" -lt \"$J\" ] && J=$M; echo \"compiling with $J parallel jobs\"; cmake --build build --parallel \"$J\"",
+      "cmake --install build --strip",
+      "cmake --install build --component Test --prefix /tmp/test-component && (cd /tmp/test-component && find . \\( -type f -o -type l \\) -print0) | (cd /usr/local/mysql && xargs -0 -r rm -f) && rm -rf /tmp/test-component",
+      "rm -f /usr/local/mysql/docs/INFO_BIN /usr/local/mysql/docs/INFO_SRC"
+    ],
+    "install_prefix": "/usr/local/mysql",
+    "vendored_deps": true,
+    "_note": "BUILD_CONFIG=mysql_release is upstream's release profile (cmake/build_configurations/mysql_release.cmake): it turns on REPRODUCIBLE_BUILD for release build types and requires libaio. COMPILATION_COMMENT is set so @@version_comment names this build instead of Oracle's own 'MySQL Community Server - GPL' string. WITH_TIRPC=bundled still needs rpcgen (rpcsvc-proto). libaio-dev: InnoDB native AIO (mysql_release refuses to configure without it). The Test install component (test plugins and components, mysqltest) is installed into a scratch prefix only to learn its file list, which is then removed from /usr/local/mysql. INSTALL_MYSQLTESTDIR= keeps the 740 MB mysql-test tree out of the image.",
+    "commit": "780b506e8296a61f2a7067bf2087d32c78e0bb76",
+    "source_date_epoch": 1795161132,
+    "source_date_epoch_provenance": "the time release 9.7.4-CE-ubuntu24.04-r6 was cut (2026-11-20T07:52:12Z), by scripts/retarget.py --rev-bump: ReadyStack dates an image by when its release was packaged (owner 2026-11-10), recorded here once and used by every rebuild of the release; it builds upstream commit 780b506e8296, dated 2026-10-20T19:19:21Z (source.commit_epoch).",
+    "source_date_epoch_basis": "release-cut",
+    "commit_epoch": 1792523961
+  },
+  "binaries_from_source": [
+    {
+      "name": "mysqld",
+      "out_path": "/usr/local/mysql/bin/mysqld",
+      "verify_subcmd": "--version"
+    },
+    {
+      "name": "mysql",
+      "out_path": "/usr/local/mysql/bin/mysql",
+      "verify_subcmd": "--version"
+    },
+    {
+      "name": "mysqladmin",
+      "out_path": "/usr/local/mysql/bin/mysqladmin",
+      "verify_subcmd": "--version"
+    },
+    {
+      "name": "mysqldump",
+      "out_path": "/usr/local/mysql/bin/mysqldump",
+      "verify_subcmd": "--version"
+    }
+  ],
+  "runtime_packages": [
+    "base-files",
+    "base-passwd",
+    "bash",
+    "ca-certificates",
+    "coreutils",
+    "dash",
+    "gcc-14-base",
+    "libacl1",
+    "libaio1t64",
+    "libattr1",
+    "libc-bin",
+    "libc6",
+    "libcap2",
+    "libcrypt1",
+    "libgcc-s1",
+    "libgmp10",
+    "libicu74",
+    "liblz4-1",
+    "libpcre2-8-0",
+    "libselinux1",
+    "libssl3t64",
+    "libstdc++6",
+    "libtinfo6",
+    "libzstd1",
+    "openssl",
+    "tzdata",
+    "zlib1g"
+  ],
+  "runtime_base": {
+    "kind": "chisel",
+    "shell": true,
+    "tools": [
+      "bash",
+      "seq",
+      "id"
+    ],
+    "slices": [
+      "libicu74_libs",
+      "libssl3t64_libs",
+      "zlib1g_libs",
+      "libzstd1_libs",
+      "libtinfo6_libs",
+      "libstdc++6_libs",
+      "liblz4-1_libs",
+      "libgcc-s1_libs",
+      "libaio1t64_libs",
+      "libc-bin_locale"
+    ],
+    "slice_defs": [
+      "libaio1t64"
+    ],
+    "provides": [
+      "ibd2sdi",
+      "innochecksum",
+      "my_print_defaults",
+      "myisam_ftdump",
+      "myisamchk",
+      "myisamlog",
+      "myisampack",
+      "mysql",
+      "mysql_config",
+      "mysql_config_editor",
+      "mysql_migrate_keyring",
+      "mysql_secure_installation",
+      "mysql_tzinfo_to_sql",
+      "mysqladmin",
+      "mysqlbinlog",
+      "mysqlcheck",
+      "mysqld",
+      "mysqld_multi",
+      "mysqld_safe",
+      "mysqldump",
+      "mysqldumpslow",
+      "mysqlimport",
+      "mysqlshow",
+      "mysqlslap",
+      "perror"
+    ],
+    "rootfs_run": [
+      "mkdir -p \"$ROOT/etc/mysql/conf.d\""
+    ],
+    "packages": "vendored/chisel/packages.tsv"
+  }
+}

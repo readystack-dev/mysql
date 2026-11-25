@@ -1,0 +1,8 @@
+image_manifest_digest=sha256:b37e1407399a326725734783af3e128c91d291f04338b492a3d8c83dfe75a987
+config_digest=sha256:bcfe9728020aee5e2052f6c443af2c7305062d149e4437755a6fcafdf121478d
+tag=readystack/mysql:9.7.4-CE-ubuntu24.04-r6
+probe_port=3306
+probe_path=/
+probe_timeout=180
+verify_secret=MYSQL_ROOT_PASSWORD
+probe_exec=mysqladmin --protocol=tcp --host=127.0.0.1 --port=3306 --connect-timeout=5 --silent ping
